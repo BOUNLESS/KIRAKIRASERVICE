@@ -1,0 +1,44 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consultar Productos - Kira Kira</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='empleado_dashboard.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Consultar Productos</h1>
+        <p>Estas en la pestaña de consulta de productos.</p>
+
+        <a href="{{ url_for('empleado_dashboard') }}" class="back-btn">Volver</a>
+
+        <br><br>
+
+        <table border="1" cellpadding="10" cellspacing="0">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Codigo</th>
+                    <th>Precio</th>
+                    <th>Stock</th>
+                    <th>Categoria</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for producto in productos %}
+                <tr>
+                    <td>{{ producto[0] }}</td>
+                    <td>{{ producto[1] }}</td>
+                    <td>{{ producto[2] }}</td>
+                    <td>${{ producto[3] }}</td>
+                    <td>{{ producto[4] }}</td>
+                    <td>{{ producto[5] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

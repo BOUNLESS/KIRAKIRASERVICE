@@ -1,0 +1,91 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Caja - Kira Kira</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='empleado_dashboard.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Caja</h1>
+        <p>Agrega productos al carrito para registrar una venta.</p>
+
+        <a href="{{ url_for('empleado_dashboard') }}" class="back-btn">Volver</a>
+
+        <br><br>
+
+        <h2>Agregar producto</h2>
+
+        <form method="POST" action="{{ url_for('agregar_al_carrito') }}">
+            <label for="producto_id">Producto:</label><br>
+            <select name="producto_id" id="producto_id" required>
+                {% for producto in productos %}
+                    <option value="{{ producto[0] }}">
+                        {{ producto[1] }} | Codigo: {{ producto[2] }} | ${{ producto[3] }} | Stock: {{ producto[4] }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <br><br>
+
+            <label for="cantidad">Cantidad:</label><br>
+            <input type="number" name="cantidad" id="cantidad" min="1" required>
+
+            <br><br>
+
+            <button type="submit">Agregar al carrito</button>
+        </form>
+
+        <br><br>
+
+        <h2>Carrito actual</h2>
+
+        <table border="1" cellpadding="10" cellspacing="0">
+            <thead>
+                <tr>
+                    <th>Producto</th>
+                    <th>Precio</th>
+                    <th>Cantidad</th>
+                    <th>Subtotal</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in carrito %}
+                <tr>
+                    <td>{{ item["nombre"] }}</td>
+                    <td>${{ item["precio"] }}</td>
+                    <td>{{ item["cantidad"] }}</td>
+                    <td>${{ item["subtotal"] }}</td>
+                    <td>
+                        <a href="{{ url_for('eliminar_del_carrito', index=loop.index0) }}">Eliminar</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <br>
+
+        <h3>Total actual: ${{ total }}</h3>
+
+        <br><br>
+
+        <h2>Cobrar venta</h2>
+
+        <form method="POST" action="{{ url_for('finalizar_venta') }}">
+            <label for="metodo_pago">Metodo de pago:</label><br>
+            <select name="metodo_pago" id="metodo_pago" required>
+                <option value="Efectivo">Efectivo</option>
+                <option value="Tarjeta">Tarjeta</option>
+                <option value="Transferencia">Transferencia</option>
+            </select>
+
+            <br><br>
+
+            <button type="submit">Cobrar</button>
+        </form>
+    </div>
+</body>
+</html>

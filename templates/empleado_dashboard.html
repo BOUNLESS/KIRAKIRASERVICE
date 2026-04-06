@@ -1,0 +1,23 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Vendedor - Kira Kira</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='empleado_dashboard.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Panel de Vendedor</h1>
+        <p>Bienvenido a panel de vendedor.</p>
+
+        <div class="menu">
+            <a href="{{ url_for('caja') }}" class="card">Caja</a>
+            <a href="{{ url_for('ventas_del_dia') }}" class="card">Ventas del Dia</a>
+            <a href="{{ url_for('gastos_caja') }}" class="card">Gastos de Caja</a>
+            <a href="{{ url_for('consultar_productos') }}" class="card">Consultar productos</a>
+            <a href="{{ url_for('cierre_caja') }}">Cierre de caja</a>
+        </div>
+    </div>
+</body>
+</html>

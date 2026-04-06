@@ -1,0 +1,69 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ventas del Dia | Kira Kira</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='empleado_dashboard.css') }}">
+</head>
+<body>
+
+    <div class="contenedor-principal">
+        <h1>Ventas del Dia</h1>
+
+        <!-- RESUMEN -->
+        <div class="resumen-cards">
+            <div class="card-resumen">
+                <h3>Total vendido hoy</h3>
+                <p>${{ "%.2f"|format(total_vendido) }}</p>
+            </div>
+
+            <div class="card-resumen">
+                <h3>Total gastos de caja</h3>
+                <p>${{ "%.2f"|format(total_gastos) }}</p>
+            </div>
+
+            <div class="card-resumen">
+                <h3>Balance neto del dia</h3>
+                <p>${{ "%.2f"|format(balance_neto) }}</p>
+            </div>
+        </div>
+
+        <!-- TABLA DE VENTAS -->
+        <div class="tabla-container">
+            <h2>Lista de ventas realizadas hoy</h2>
+
+            {% if ventas_hoy %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID Venta</th>
+                            <th>Total</th>
+                            <th>Metodo de pago</th>
+                            <th>Fecha</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for venta in ventas_hoy %}
+                        <tr>
+                            <td>{{ venta[0] }}</td>
+                            <td>${{ "%.2f"|format(venta[1]) }}</td>
+                            <td>{{ venta[2] }}</td>
+                            <td>{{ venta[3] }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>No hay ventas registradas hoy.</p>
+            {% endif %}
+        </div>
+
+        <!-- BOTÃ“N VOLVER -->
+        <div class="boton-volver">
+            <a href="{{ url_for('empleado_dashboard') }}" class="btn-volver">Volver al Panel</a>
+        </div>
+    </div>
+
+</body>
+</html>
