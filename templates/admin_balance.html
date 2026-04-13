@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Balance General</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background:
+                radial-gradient(circle at top left, rgba(102, 224, 212, 0.20), transparent 30%),
+                radial-gradient(circle at top right, rgba(47, 111, 115, 0.18), transparent 28%),
+                linear-gradient(135deg, #e8f5f4 0%, #d7eceb 45%, #cfe6e6 100%);
+            margin: 0;
+            color: #183b3f;
+        }
+
+        .sidebar {
+            width: 220px;
+            background: rgba(35, 96, 100, 0.88);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            height: 100vh;
+            position: fixed;
+            color: white;
+            padding: 20px;
+            box-sizing: border-box;
+            overflow-y: auto;
+            border-right: 1px solid rgba(255, 255, 255, 0.14);
+            box-shadow: 8px 0 30px rgba(23, 59, 63, 0.18);
+        }
+
+        .sidebar h2 {
+            margin: 0 0 16px 0;
+            letter-spacing: 1px;
+        }
+
+        .sidebar a {
+            display: block;
+            color: rgba(255, 255, 255, 0.94);
+            margin: 6px 0;
+            text-decoration: none;
+            padding: 10px 12px;
+            border-radius: 12px;
+            transition: background 0.25s ease, transform 0.25s ease;
+        }
+
+        .sidebar a:hover {
+            background: rgba(255, 255, 255, 0.12);
+            transform: translateX(3px);
+            text-decoration: none;
+        }
+
+        .menu-group {
+            margin-top: 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.22);
+            padding-top: 10px;
+        }
+
+        .menu-group summary {
+            list-style: none;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 6px 0;
+            padding: 10px 12px;
+            border-radius: 12px;
+            transition: background 0.25s ease;
+        }
+
+        .menu-group summary:hover {
+            background: rgba(255, 255, 255, 0.10);
+        }
+
+        .menu-group summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .menu-group summary::after {
+            content: "+";
+            float: right;
+            font-weight: bold;
+        }
+
+        .menu-group[open] summary::after {
+            content: "-";
+        }
+
+        .menu-links {
+            margin-top: 6px;
+            padding-left: 10px;
+        }
+
+        .menu-links a {
+            margin: 4px 0;
+        }
+
+        .main {
+            margin-left: 240px;
+            padding: 30px;
+        }
+
+        .main h1 {
+            margin-top: 0;
+            color: #245d61;
+            font-size: 32px;
+            letter-spacing: 0.4px;
+        }
+
+        .cards {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .card {
+            background: rgba(59, 127, 133, 0.76);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            color: white;
+            padding: 20px;
+            border-radius: 24px;
+            width: 250px;
+            box-shadow: 0 10px 30px rgba(43, 95, 99, 0.18);
+            border: 1px solid rgba(255, 255, 255, 0.20);
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 14px 34px rgba(43, 95, 99, 0.24);
+        }
+
+        .card h3 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-size: 17px;
+            font-weight: 600;
+        }
+
+        .card p {
+            margin: 0;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .reporte-box {
+            margin-top: 30px;
+            background: rgba(255, 255, 255, 0.58);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            padding: 24px;
+            border-radius: 24px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            border: 1px solid rgba(255,255,255,0.35);
+        }
+
+        .reporte-box h2 {
+            margin-top: 0;
+            margin-bottom: 18px;
+            color: #2f6f73;
+            font-size: 24px;
+        }
+
+        .reporte-grid {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+            align-items: flex-start;
+            flex-wrap: wrap;
+        }
+
+        .reporte-col {
+            flex: 1 1 460px;
+            min-width: 320px;
+            background: rgba(255, 255, 255, 0.55);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 16px;
+            border-radius: 20px;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.35), 0 6px 18px rgba(0,0,0,0.06);
+            border: 1px solid rgba(255,255,255,0.34);
+        }
+
+        .reporte-col h3 {
+            text-align: center;
+            color: #2f6f73;
+            margin-top: 0;
+            margin-bottom: 12px;
+            font-size: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            background: rgba(255,255,255,0.72);
+            overflow: hidden;
+            border-radius: 16px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid rgba(47, 111, 115, 0.10);
+        }
+
+        th {
+            background: #2f6f73;
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tbody tr:hover {
+            background: rgba(47, 111, 115, 0.06);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        @media (max-width: 900px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+
+            .main {
+                margin-left: 0;
+                padding: 20px;
+            }
+
+            .cards {
+                flex-direction: column;
+            }
+
+            .card {
+                width: auto;
+            }
+
+            .reporte-grid {
+                flex-direction: column;
+            }
+
+            .reporte-col {
+                min-width: unset;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <h2>KIRA KIRA</h2>
+
+    <a href="#reporte">Balance General</a>
+    <a href="{{ url_for('tienda1_inventario') }}">Inventario</a>
+
+    <details class="menu-group">
+        <summary>Tienda 1</summary>
+        <div class="menu-links">
+            <a href="{{ url_for('tienda1_caja') }}">Caja</a>
+            <a href="{{ url_for('tienda1_ventas_dia') }}">Ventas del dia</a>
+            <a href="{{ url_for('tienda1_gastos') }}">Gastos</a>
+            <a href="{{ url_for('tienda1_cierre') }}">Cierre</a>
+        </div>
+    </details>
+
+    <details class="menu-group">
+        <summary>Tienda 2</summary>
+        <div class="menu-links">
+            <a href="{{ url_for('tienda2_caja') }}">Caja</a>
+            <a href="{{ url_for('tienda2_ventas_dia') }}">Ventas del dia</a>
+            <a href="{{ url_for('tienda2_gastos') }}">Gastos</a>
+            <a href="{{ url_for('tienda2_cierre') }}">Cierre</a>
+        </div>
+    </details>
+</div>
+
+<div class="main">
+
+    <h1>Balance General</h1>
+
+    <div class="cards">
+        <div class="card">
+            <h3>Total vendido hoy</h3>
+            <p>${{ ventas_hoy }}</p>
+        </div>
+
+        <div class="card">
+            <h3>Gastos hoy</h3>
+            <p>${{ gastos_hoy }}</p>
+        </div>
+
+        <div class="card">
+            <h3>Balance neto hoy</h3>
+            <p>${{ neto_hoy }}</p>
+        </div>
+
+        <div class="card">
+            <h3>Últimos 15 días</h3>
+            <p>${{ neto_15 }}</p>
+        </div>
+
+        <div class="card">
+            <h3>Últimos 30 días</h3>
+            <p>${{ neto_30 }}</p>
+        </div>
+    </div>
+
+    <div class="reporte-box" id="reporte">
+        <h2>Reporte diario - últimos 15 días</h2>
+
+        <div class="reporte-grid">
+
+            <div class="reporte-col">
+                <h3>KIRA 1</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Ventas</th>
+                            <th>Gastos</th>
+                            <th>Ganancia</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for dia in reporte_kira1 %}
+                        <tr>
+                            <td>{{ dia.fecha }}</td>
+                            <td>${{ "%.2f"|format(dia.ventas) }}</td>
+                            <td>${{ "%.2f"|format(dia.gastos) }}</td>
+                            <td>${{ "%.2f"|format(dia.ganancia) }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="reporte-col">
+                <h3>KIRA 2</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Ventas</th>
+                            <th>Gastos</th>
+                            <th>Ganancia</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for dia in reporte_kira2 %}
+                        <tr>
+                            <td>{{ dia.fecha }}</td>
+                            <td>${{ "%.2f"|format(dia.ventas) }}</td>
+                            <td>${{ "%.2f"|format(dia.gastos) }}</td>
+                            <td>${{ "%.2f"|format(dia.ganancia) }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

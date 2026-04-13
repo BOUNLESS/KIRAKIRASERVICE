@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventario - Kira Kira</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background:
+                radial-gradient(circle at top left, rgba(102, 224, 212, 0.20), transparent 30%),
+                radial-gradient(circle at top right, rgba(47, 111, 115, 0.18), transparent 28%),
+                linear-gradient(135deg, #e8f5f4 0%, #d7eceb 45%, #cfe6e6 100%);
+            margin: 0;
+            color: #183b3f;
+        }
+
+        .contenedor {
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 30px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 24px;
+            padding: 22px 24px;
+            border-radius: 24px;
+            background: rgba(255, 255, 255, 0.55);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border: 1px solid rgba(255,255,255,0.35);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        }
+
+        .topbar h1 {
+            margin: 0;
+            color: #245d61;
+            font-size: 32px;
+            letter-spacing: 0.4px;
+        }
+
+        .topbar p {
+            margin: 8px 0 0 0;
+            color: #456d70;
+            font-size: 15px;
+        }
+
+        .btn-volver {
+            display: inline-block;
+            padding: 12px 18px;
+            background: rgba(47, 111, 115, 0.88);
+            color: white;
+            text-decoration: none;
+            border-radius: 14px;
+            border: 1px solid rgba(255,255,255,0.18);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 8px 20px rgba(43, 95, 99, 0.18);
+            transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+            white-space: nowrap;
+        }
+
+        .btn-volver:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(43, 95, 99, 0.24);
+            background: rgba(40, 98, 102, 0.95);
+        }
+
+        .mensaje {
+            background: rgba(220, 252, 231, 0.80);
+            color: #166534;
+            padding: 14px 16px;
+            border-radius: 16px;
+            margin-bottom: 18px;
+            border: 1px solid rgba(255,255,255,0.35);
+            box-shadow: 0 6px 18px rgba(0,0,0,0.05);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .error {
+            background: rgba(254, 226, 226, 0.82);
+            color: #991b1b;
+            padding: 14px 16px;
+            border-radius: 16px;
+            margin-bottom: 18px;
+            border: 1px solid rgba(255,255,255,0.35);
+            box-shadow: 0 6px 18px rgba(0,0,0,0.05);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(320px, 1fr));
+            gap: 22px;
+            margin-bottom: 28px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.56);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border-radius: 24px;
+            padding: 22px;
+            box-shadow: 0 10px 28px rgba(0,0,0,0.08);
+            border: 1px solid rgba(255,255,255,0.35);
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 14px 32px rgba(0,0,0,0.10);
+        }
+
+        .card h2 {
+            margin-top: 0;
+            margin-bottom: 16px;
+            color: #2f6f73;
+            font-size: 22px;
+        }
+
+        label {
+            display: block;
+            margin-top: 12px;
+            margin-bottom: 7px;
+            font-weight: bold;
+            color: #285e63;
+        }
+
+        input, select, button {
+            width: 100%;
+            padding: 11px 12px;
+            border-radius: 12px;
+            border: 1px solid rgba(47, 111, 115, 0.18);
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+
+        input, select {
+            background: rgba(255,255,255,0.78);
+            color: #183b3f;
+            outline: none;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+        }
+
+        input:focus, select:focus {
+            border-color: #3b7f85;
+            box-shadow: 0 0 0 3px rgba(59, 127, 133, 0.12);
+            background: rgba(255,255,255,0.94);
+        }
+
+        button {
+            margin-top: 18px;
+            background: rgba(47, 111, 115, 0.92);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            box-shadow: 0 8px 18px rgba(43, 95, 99, 0.16);
+            transition: transform 0.22s ease, box-shadow 0.22s ease, background 0.22s ease;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(43, 95, 99, 0.22);
+            background: rgba(40, 98, 102, 0.98);
+        }
+
+        .danger-note {
+            margin-top: 0;
+            margin-bottom: 12px;
+            color: #991b1b;
+            font-size: 0.92rem;
+            line-height: 1.4;
+        }
+
+        .danger-btn {
+            background: rgba(185, 28, 28, 0.92);
+            box-shadow: 0 8px 18px rgba(153, 27, 27, 0.18);
+        }
+
+        .danger-btn:hover {
+            background: rgba(153, 27, 27, 0.98);
+            box-shadow: 0 12px 24px rgba(153, 27, 27, 0.22);
+        }
+
+        .tabla-box {
+            background: rgba(255, 255, 255, 0.56);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: 0 10px 28px rgba(0,0,0,0.08);
+            border: 1px solid rgba(255,255,255,0.35);
+        }
+
+        .tabla-box h2 {
+            margin-top: 0;
+            margin-bottom: 16px;
+            color: #2f6f73;
+            font-size: 24px;
+        }
+
+        .tabla-wrap {
+            overflow-x: auto;
+            border-radius: 18px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(255,255,255,0.78);
+            border-radius: 18px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 14px 12px;
+            border-bottom: 1px solid rgba(47, 111, 115, 0.10);
+            text-align: left;
+        }
+
+        th {
+            background: #2f6f73;
+            color: white;
+            font-weight: 600;
+        }
+
+        tbody tr:hover {
+            background: rgba(47, 111, 115, 0.06);
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        @media (max-width: 900px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .topbar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .btn-volver {
+                width: 100%;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .contenedor {
+                padding: 18px;
+            }
+
+            .topbar {
+                padding: 18px;
+            }
+
+            .card,
+            .tabla-box {
+                padding: 18px;
+            }
+
+            .topbar h1 {
+                font-size: 26px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="contenedor">
+
+        <div class="topbar">
+            <div>
+                <h1>Inventario  {{ KIRAKIRA }}</h1>
+                <p>Administra productos y ajusta existencias.</p>
+            </div>
+            <a href="{{ admin_balance_url }}" class="btn-volver">← Volver al Inicio </a>
+        </div>
+
+        {% if mensaje %}
+            <div class="mensaje">{{ mensaje }}</div>
+        {% endif %}
+
+        {% if error %}
+            <div class="error">{{ error }}</div>
+        {% endif %}
+
+        <div class="grid">
+            <div class="card">
+                <h2>Agregar producto nuevo</h2>
+                <form method="POST">
+                    <input type="hidden" name="accion" value="nuevo_producto">
+
+                    <label for="codigo">Código del producto</label>
+                    <input type="text" name="codigo" id="codigo" required>
+
+                    <label for="nombre">Nombre del producto</label>
+                    <input type="text" name="nombre" id="nombre" required>
+
+                    <label for="precio">Precio</label>
+                    <input type="number" name="precio" id="precio" step="0.01" min="0" required>
+
+                    <label for="stock_inicial">Stock inicial</label>
+                    <input type="number" name="stock_inicial" id="stock_inicial" min="0" required>
+
+                    <button type="submit">Guardar producto</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <h2>Movimiento de inventario</h2>
+                <form method="POST">
+                    <input type="hidden" name="accion" value="movimiento">
+
+                    <label for="producto_id">Producto</label>
+                    <select name="producto_id" id="producto_id" required>
+                        <option value="">Selecciona un producto</option>
+                        {% for p in productos %}
+                            <option value="{{ p[0] }}">
+                                {{ p[2] }} | Código: {{ p[1] }} | Precio: ${{ "%.2f"|format(p[3]) }} | Stock: {{ p[4] }}
+                            </option>
+                        {% endfor %}
+                    </select>
+
+                    <label for="tipo">Tipo de movimiento</label>
+                    <select name="tipo" id="tipo" required>
+                        <option value="entrada">Entrada (+)</option>
+                        <option value="salida">Salida (-)</option>
+                    </select>
+
+                    <label for="cantidad">Cantidad</label>
+                    <input type="number" name="cantidad" id="cantidad" min="1" required>
+
+                    <button type="submit">Guardar movimiento</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <h2>Eliminar producto definitivo</h2>
+                <p class="danger-note">
+                    Este cambio no se puede deshacer. Escribe ELIMINAR para confirmar.
+                </p>
+                <form method="POST">
+                    <input type="hidden" name="accion" value="eliminar_producto">
+
+                    <label for="producto_id_eliminar">Producto</label>
+                    <select name="producto_id_eliminar" id="producto_id_eliminar" required>
+                        <option value="">Selecciona un producto</option>
+                        {% for p in productos %}
+                            <option value="{{ p[0] }}">
+                                {{ p[2] }} | Código: {{ p[1] }} | Stock: {{ p[4] }}
+                            </option>
+                        {% endfor %}
+                    </select>
+
+                    <label for="confirmacion_eliminar">Confirmación</label>
+                    <input
+                        type="text"
+                        name="confirmacion_eliminar"
+                        id="confirmacion_eliminar"
+                        placeholder="Escribe ELIMINAR"
+                        required
+                    >
+
+                    <button type="submit" class="danger-btn">Eliminar definitivamente</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="tabla-box">
+            <h2>Lista de productos</h2>
+            <div class="tabla-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Código</th>
+                            <th>Nombre</th>
+                            <th>Precio</th>
+                            <th>Stock</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for p in productos %}
+                        <tr>
+                            <td>{{ p[0] }}</td>
+                            <td>{{ p[1] }}</td>
+                            <td>{{ p[2] }}</td>
+                            <td>${{ "%.2f"|format(p[3]) }}</td>
+                            <td>{{ p[4] }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>

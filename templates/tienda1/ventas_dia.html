@@ -3,15 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ventas del Dia | Kira Kira</title>
+    <title>Ventas del Dia Tienda 1 | Kira Kira</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='empleado_dashboard.css') }}">
 </head>
 <body>
-
     <div class="contenedor-principal">
-        <h1>Ventas del Dia</h1>
+        <h1>Ventas del Dia - Tienda 1</h1>
+        <p><strong>Filtro fijo por tienda_id={{ tienda_id }}</strong></p>
 
-        <!-- RESUMEN -->
         <div class="resumen-cards">
             <div class="card-resumen">
                 <h3>Total vendido hoy</h3>
@@ -29,7 +28,6 @@
             </div>
         </div>
 
-        <!-- TABLA DE VENTAS -->
         <div class="tabla-container">
             <h2>Lista de ventas realizadas hoy</h2>
 
@@ -59,11 +57,9 @@
             {% endif %}
         </div>
 
-        <!-- BOTÃ“N VOLVER -->
         <div class="boton-volver">
-            <a href="{{ url_for('empleado_dashboard') }}" class="btn-volver">Volver al Panel</a>
+            <a href="{{ back_url }}" class="btn-volver">Volver al Panel</a>
         </div>
     </div>
-
 </body>
 </html>

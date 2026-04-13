@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Tienda 1 - Kira Kira</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='empleado_dashboard.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Panel Tienda 1</h1>
+        <p>Usuario: {{ session["usuario"] }}</p>
+
+        <div class="menu">
+            <a href="/tienda1/caja" class="card">Caja</a>
+            <a href="/tienda1/ventas-dia" class="card">Ventas del Dia</a>
+            <a href="/tienda1/gastos" class="card">Gastos de Caja</a>
+            <a href="/tienda1/cierre" class="card">Cierre de Caja</a>
+            <a href="{{ url_for('consultar_productos') }}" class="card">Consultar productos</a>
+        </div>
+
+        {% if session["rol"] == "Administrador" %}
+            <br>
+            <a href="{{ url_for('admin_dashboard') }}" class="back-btn">Volver al Panel Admin</a>
+        {% endif %}
+    </div>
+</body>
+</html>

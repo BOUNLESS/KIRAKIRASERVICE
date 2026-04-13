@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -7,38 +7,50 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='empleado_dashboard.css') }}">
 </head>
 <body>
-    <div class="container">
+    <div class="container" style="width: 92%; max-width: 1100px; text-align: left;">
         <h1>Consultar Productos</h1>
-        <p>Estas en la pestaña de consulta de productos.</p>
+        <p>Listado general de inventario activo.</p>
 
-        <a href="{{ url_for('empleado_dashboard') }}" class="back-btn">Volver</a>
-
-        <br><br>
-
-        <table border="1" cellpadding="10" cellspacing="0">
+        <table border="1" cellpadding="10" cellspacing="0" style="width: 100%; background: #fff;">
             <thead>
                 <tr>
                     <th>ID</th>
-                    <th>Nombre</th>
+                    <th>Producto</th>
                     <th>Codigo</th>
+                    <th>Categoria</th>
                     <th>Precio</th>
                     <th>Stock</th>
-                    <th>Categoria</th>
                 </tr>
             </thead>
             <tbody>
-                {% for producto in productos %}
+                {% for p in productos %}
                 <tr>
-                    <td>{{ producto[0] }}</td>
-                    <td>{{ producto[1] }}</td>
-                    <td>{{ producto[2] }}</td>
-                    <td>${{ producto[3] }}</td>
-                    <td>{{ producto[4] }}</td>
-                    <td>{{ producto[5] }}</td>
+                    <td>{{ p[0] }}</td>
+                    <td>{{ p[1] }}</td>
+                    <td>{{ p[2] }}</td>
+                    <td>{{ p[5] or "-" }}</td>
+                    <td>${{ "%.2f"|format(p[3]) }}</td>
+                    <td>{{ p[4] }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6">No hay productos registrados.</td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
+
+        <br>
+
+        {% if session["rol"] == "Administrador" %}
+            <a href="{{ url_for('admin_dashboard') }}" class="back-btn">Volver al Panel Admin</a>
+        {% elif session.get("tienda_id") == 1 %}
+            <a href="/tienda1/dashboard" class="back-btn">Volver al Panel Tienda 1</a>
+        {% elif session.get("tienda_id") == 2 %}
+            <a href="/tienda2/dashboard" class="back-btn">Volver al Panel Tienda 2</a>
+        {% else %}
+            <a href="{{ url_for('home') }}" class="back-btn">Volver</a>
+        {% endif %}
     </div>
 </body>
 </html>

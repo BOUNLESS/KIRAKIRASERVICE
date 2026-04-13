@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -9,7 +9,41 @@
 <body>
     <div class="container">
         <h1>Panel de Administrador</h1>
-        <p>Estas en el panel de administrador.</p>
+        <p>Usuario: {{ session["usuario"] }}</p>
+        <p>Selecciona una tienda para entrar a sus modulos.</p>
+
+        <div class="tienda-grid">
+            <section class="tienda-box">
+                <h2>Tienda 1</h2>
+                <div class="menu">
+                    <a href="/tienda1/dashboard" class="card">Dashboard</a>
+                    <a href="/tienda1/caja" class="card">Caja</a>
+                    <a href="/tienda1/ventas-dia" class="card">Ventas del Dia</a>
+                    <a href="/tienda1/gastos" class="card">Gastos</a>
+                    <a href="/tienda1/cierre" class="card">Cierre</a>
+                    <a href="/tienda1/inventario" class="card">Inventario</a>
+                    <a href="/admin/balance" class="card">Balance General</a>
+                </div>
+            </section>
+
+            <section class="tienda-box">
+                <h2>Tienda 2</h2>
+                <div class="menu">
+                    <a href="/tienda2/dashboard" class="card">Dashboard</a>
+                    <a href="/tienda2/caja" class="card">Caja</a>
+                    <a href="/tienda2/ventas-dia" class="card">Ventas del Dia</a>
+                    <a href="/tienda2/gastos" class="card">Gastos</a>
+                    <a href="/tienda2/cierre" class="card">Cierre</a>
+                    <a href="/tienda2/inventario" class="card">Inventario</a>
+                </div>
+            </section>
+        </div>
+
+        <div class="fallback-links">
+            <p><strong>Enlaces directos:</strong></p>
+            <p><a href="/tienda1/dashboard">/tienda1/dashboard</a></p>
+            <p><a href="/tienda2/dashboard">/tienda2/dashboard</a></p>
+        </div>
     </div>
 </body>
 </html>

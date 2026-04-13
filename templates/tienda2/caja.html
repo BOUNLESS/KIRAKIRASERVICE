@@ -1,0 +1,146 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Caja Tienda 2 - Kira Kira</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='empleado_dashboard.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Caja Tienda 2</h1>
+        <p>Todo lo que se cobre aqui se guarda en Tienda 2 (tienda_id={{ tienda_id }}).</p>
+
+        <a href="{{ back_url }}" class="back-btn">Volver</a>
+
+        <br><br>
+
+        <h2>Agregar producto</h2>
+
+        <form method="POST" action="/tienda2/caja/agregar">
+            <label for="busqueda_producto">Producto (busqueda):</label><br>
+            <input
+                type="text"
+                id="busqueda_producto"
+                placeholder="Escribe nombre o codigo. Ej: CAPY"
+                autocomplete="off"
+            >
+
+            <br><br>
+
+            <label for="producto_id">Selecciona producto:</label><br>
+            <select name="producto_id" id="producto_id" required size="6">
+                {% for producto in productos %}
+                    <option value="{{ producto[0] }}" data-search="{{ (producto[1] ~ ' ' ~ producto[2])|lower }}">
+                        {{ producto[1] }} | Codigo: {{ producto[2] }} | ${{ producto[3] }} | Stock: {{ producto[4] }}
+                    </option>
+                {% endfor %}
+            </select>
+            <p id="sin_resultados" style="display: none; color: #b91c1c;">No hay productos con esa busqueda.</p>
+
+            <br><br>
+
+            <label for="cantidad">Cantidad:</label><br>
+            <input type="number" name="cantidad" id="cantidad" min="1" required>
+
+            <br><br>
+
+            <button type="submit">Agregar al carrito</button>
+        </form>
+
+        <br><br>
+
+        <h2>Carrito actual</h2>
+
+        <table border="1" cellpadding="10" cellspacing="0">
+            <thead>
+                <tr>
+                    <th>Producto</th>
+                    <th>Precio</th>
+                    <th>Cantidad</th>
+                    <th>Subtotal</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in carrito %}
+                <tr>
+                    <td>{{ item["nombre"] }}</td>
+                    <td>${{ item["precio"] }}</td>
+                    <td>{{ item["cantidad"] }}</td>
+                    <td>${{ item["subtotal"] }}</td>
+                    <td>
+                        <a href="/tienda2/caja/eliminar/{{ loop.index0 }}">Eliminar</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <br>
+
+        <h3>Total actual: ${{ total }}</h3>
+
+        <br><br>
+
+        <h2>Cobrar venta</h2>
+
+        <form method="POST" action="/tienda2/caja/finalizar">
+            <label for="metodo_pago">Metodo de pago:</label><br>
+            <select name="metodo_pago" id="metodo_pago" required>
+                <option value="Efectivo">Efectivo</option>
+                <option value="Tarjeta">Tarjeta</option>
+                <option value="Transferencia">Transferencia</option>
+            </select>
+
+            <br><br>
+
+            <button type="submit">Cobrar</button>
+        </form>
+    </div>
+
+    <script>
+        (function () {
+            const inputBusqueda = document.getElementById("busqueda_producto");
+            const selectProducto = document.getElementById("producto_id");
+            const avisoSinResultados = document.getElementById("sin_resultados");
+            const opcionesOriginales = Array.from(selectProducto.options);
+
+            function filtrarProductos() {
+                const termino = inputBusqueda.value.trim().toLowerCase();
+                const seleccionadoPrevio = selectProducto.value;
+                let visibles = 0;
+
+                selectProducto.innerHTML = "";
+
+                opcionesOriginales.forEach((opcion) => {
+                    const textoBusqueda = (opcion.dataset.search || opcion.textContent).toLowerCase();
+                    if (!termino || textoBusqueda.includes(termino)) {
+                        selectProducto.appendChild(opcion);
+                        visibles += 1;
+                    }
+                });
+
+                if (visibles === 0) {
+                    avisoSinResultados.style.display = "block";
+                    return;
+                }
+
+                avisoSinResultados.style.display = "none";
+
+                const existeSeleccion = Array.from(selectProducto.options).some(
+                    (opcion) => opcion.value === seleccionadoPrevio
+                );
+                if (existeSeleccion) {
+                    selectProducto.value = seleccionadoPrevio;
+                } else {
+                    selectProducto.selectedIndex = 0;
+                }
+            }
+
+            inputBusqueda.addEventListener("input", filtrarProductos);
+            filtrarProductos();
+        })();
+    </script>
+</body>
+</html>

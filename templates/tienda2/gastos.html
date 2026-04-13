@@ -1,0 +1,62 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gastos Tienda 2 - Kira Kira</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='empleado_dashboard.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Gastos de Caja - Tienda 2</h1>
+        <p>Aqui se registran gastos menores del dia para Tienda 2.</p>
+
+        <a href="{{ back_url }}" class="back-btn">Volver</a>
+
+        <br><br>
+
+        {% if mensaje %}
+            <p><strong>{{ mensaje }}</strong></p>
+        {% endif %}
+
+        <form method="POST" action="/tienda2/gastos">
+            <label for="concepto">Concepto:</label><br>
+            <input type="text" id="concepto" name="concepto" required><br><br>
+
+            <label for="monto">Monto:</label><br>
+            <input type="number" id="monto" name="monto" step="0.01" min="0.01" required><br><br>
+
+            <button type="submit">Guardar gasto</button>
+        </form>
+
+        <br><br>
+
+        <h2>Gastos de hoy</h2>
+
+        <table border="1" cellpadding="10" cellspacing="0">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Concepto</th>
+                    <th>Monto</th>
+                    <th>Fecha</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for gasto in gastos %}
+                <tr>
+                    <td>{{ gasto[0] }}</td>
+                    <td>{{ gasto[1] }}</td>
+                    <td>${{ gasto[2] }}</td>
+                    <td>{{ gasto[3] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <br>
+
+        <h3>Total de gastos del dia: ${{ "%.2f"|format(total_gastos) }}</h3>
+    </div>
+</body>
+</html>

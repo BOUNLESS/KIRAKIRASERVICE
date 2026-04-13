@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gastos de Caja - Kira Kira</title>
+    <title>Gastos Tienda 1 - Kira Kira</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='empleado_dashboard.css') }}">
 </head>
 <body>
     <div class="container">
-        <h1>Gastos de Caja</h1>
-        <p>Aqui se registran los gastos menores del dia.</p>
+        <h1>Gastos de Caja - Tienda 1</h1>
+        <p>Aqui se registran gastos menores del dia para Tienda 1.</p>
 
-        <a href="{{ url_for('empleado_dashboard') }}" class="back-btn">Volver</a>
+        <a href="{{ back_url }}" class="back-btn">Volver</a>
 
         <br><br>
 
@@ -19,7 +19,7 @@
             <p><strong>{{ mensaje }}</strong></p>
         {% endif %}
 
-        <form method="POST" action="{{ url_for('gastos_caja') }}">
+        <form method="POST" action="/tienda1/gastos">
             <label for="concepto">Concepto:</label><br>
             <input type="text" id="concepto" name="concepto" required><br><br>
 
@@ -56,7 +56,7 @@
 
         <br>
 
-        <h3>Total de gastos del dia: ${{ total_gastos }}</h3>
+        <h3>Total de gastos del dia: ${{ "%.2f"|format(total_gastos) }}</h3>
     </div>
 </body>
 </html>
