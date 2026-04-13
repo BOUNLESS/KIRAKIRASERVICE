@@ -4,43 +4,180 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Consultar Productos - Kira Kira</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='empleado_dashboard.css') }}">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background-color: #b8d8d8;
+            overflow-x: hidden;
+        }
+
+        .background {
+            min-height: 100vh;
+            position: relative;
+            padding: 30px;
+        }
+
+        /* decoraciones */
+        .wave {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.25);
+            border-radius: 43% 57% 41% 59% / 56% 45% 55% 44%;
+            z-index: 0;
+        }
+
+        .top-left {
+            width: 400px;
+            height: 400px;
+            top: -150px;
+            left: -100px;
+        }
+
+        .bottom-right {
+            width: 350px;
+            height: 350px;
+            bottom: -100px;
+            right: -80px;
+        }
+
+        .sparkle {
+            position: absolute;
+            color: white;
+            opacity: 0.7;
+        }
+
+        .s1 { top: 12%; left: 8%; font-size: 50px; }
+        .s2 { bottom: 16%; right: 10%; font-size: 30px; }
+        .s3 { top: 36%; right: 5%; font-size: 22px; }
+
+        /* contenedor */
+        .container {
+            width: 92%;
+            max-width: 1100px;
+            margin: auto;
+            background: #7cc0be;
+            padding: 35px;
+            border-radius: 30px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+            position: relative;
+            z-index: 10;
+        }
+
+        h1 {
+            color: #2f4f4f;
+            font-size: 34px;
+            margin-bottom: 10px;
+        }
+
+        p {
+            color: #2f4f4f;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        /* tabla */
+        .table-wrap {
+            overflow-x: auto;
+            border-radius: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(255,255,255,0.9);
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 14px;
+            border-bottom: 1px solid #d8e6e6;
+            text-align: left;
+            color: #2f4f4f;
+        }
+
+        th {
+            background: #5a9c9a;
+            color: white;
+            font-weight: 800;
+        }
+
+        tr:hover td {
+            background: #eef8f8;
+        }
+
+        /* botón */
+        .back-btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 14px 24px;
+            background: #2f4f4f;
+            color: white;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 800;
+            transition: 0.3s;
+        }
+
+        .back-btn:hover {
+            background: #1e3636;
+            transform: scale(1.03);
+        }
+    </style>
 </head>
+
 <body>
-    <div class="container" style="width: 92%; max-width: 1100px; text-align: left;">
+<div class="background">
+
+    <div class="wave top-left"></div>
+    <div class="wave bottom-right"></div>
+
+    <div class="sparkle s1">✦</div>
+    <div class="sparkle s2">✦</div>
+    <div class="sparkle s3">✦</div>
+
+    <div class="container">
+
         <h1>Consultar Productos</h1>
         <p>Listado general de inventario activo.</p>
 
-        <table border="1" cellpadding="10" cellspacing="0" style="width: 100%; background: #fff;">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Producto</th>
-                    <th>Codigo</th>
-                    <th>Categoria</th>
-                    <th>Precio</th>
-                    <th>Stock</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for p in productos %}
-                <tr>
-                    <td>{{ p[0] }}</td>
-                    <td>{{ p[1] }}</td>
-                    <td>{{ p[2] }}</td>
-                    <td>{{ p[5] or "-" }}</td>
-                    <td>${{ "%.2f"|format(p[3]) }}</td>
-                    <td>{{ p[4] }}</td>
-                </tr>
-                {% else %}
-                <tr>
-                    <td colspan="6">No hay productos registrados.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-
-        <br>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Producto</th>
+                        <th>Codigo</th>
+                        <th>Categoria</th>
+                        <th>Precio</th>
+                        <th>Stock</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in productos %}
+                    <tr>
+                        <td>{{ p[0] }}</td>
+                        <td>{{ p[1] }}</td>
+                        <td>{{ p[2] }}</td>
+                        <td>{{ p[5] or "-" }}</td>
+                        <td>${{ "%.2f"|format(p[3]) }}</td>
+                        <td>{{ p[4] }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6">No hay productos registrados.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
 
         {% if session["rol"] == "Administrador" %}
             <a href="{{ url_for('admin_dashboard') }}" class="back-btn">Volver al Panel Admin</a>
@@ -51,6 +188,8 @@
         {% else %}
             <a href="{{ url_for('home') }}" class="back-btn">Volver</a>
         {% endif %}
+
     </div>
+</div>
 </body>
 </html>

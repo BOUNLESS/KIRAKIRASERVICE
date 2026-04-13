@@ -4,59 +4,261 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gastos Tienda 1 - Kira Kira</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='empleado_dashboard.css') }}">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background-color: #b8d8d8;
+            overflow-x: hidden;
+        }
+
+        .background {
+            min-height: 100vh;
+            position: relative;
+            padding: 30px;
+        }
+
+        .wave {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.25);
+            border-radius: 43% 57% 41% 59% / 56% 45% 55% 44%;
+            z-index: 0;
+        }
+
+        .top-left {
+            width: 400px;
+            height: 400px;
+            top: -150px;
+            left: -100px;
+            transform: rotate(10deg);
+        }
+
+        .bottom-right {
+            width: 350px;
+            height: 350px;
+            bottom: -100px;
+            right: -80px;
+            transform: rotate(-15deg);
+        }
+
+        .sparkle {
+            position: absolute;
+            color: white;
+            z-index: 0;
+            opacity: 0.7;
+            filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.8));
+        }
+
+        .s1 { top: 12%; left: 8%; font-size: 50px; }
+        .s2 { bottom: 16%; right: 10%; font-size: 30px; }
+        .s3 { top: 36%; right: 5%; font-size: 22px; }
+
+        .container {
+            width: 100%;
+            max-width: 1100px;
+            margin: 0 auto;
+            background: #7cc0be;
+            padding: 36px;
+            border-radius: 30px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.10);
+            position: relative;
+            z-index: 10;
+        }
+
+        h1, h2, h3 {
+            color: #2f4f4f;
+        }
+
+        h1 {
+            font-size: 34px;
+            margin-bottom: 8px;
+        }
+
+        p {
+            color: #2f4f4f;
+            font-weight: 600;
+        }
+
+        .back-btn {
+            display: inline-block;
+            margin-top: 18px;
+            margin-bottom: 24px;
+            padding: 12px 22px;
+            background: #2f4f4f;
+            color: white;
+            border-radius: 24px;
+            text-decoration: none;
+            font-weight: 800;
+            transition: 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: #1e3636;
+            transform: scale(1.03);
+        }
+
+        .mensaje {
+            margin: 18px 0;
+            background: rgba(255,255,255,0.35);
+            color: #2f4f4f;
+            padding: 14px 16px;
+            border-radius: 18px;
+            font-weight: 700;
+        }
+
+        .seccion {
+            background: rgba(255,255,255,0.22);
+            padding: 24px;
+            border-radius: 24px;
+            margin-top: 16px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #2f4f4f;
+            font-weight: 800;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px 18px;
+            border-radius: 18px;
+            border: none;
+            background: #a7d4d3;
+            color: #2f4f4f;
+            outline: none;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        button {
+            padding: 14px 22px;
+            border-radius: 24px;
+            border: none;
+            background: #2f4f4f;
+            color: white;
+            font-weight: 800;
+            cursor: pointer;
+            transition: 0.3s ease;
+        }
+
+        button:hover {
+            background: #1e3636;
+            transform: scale(1.03);
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+            margin-top: 20px;
+            border-radius: 22px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(255,255,255,0.90);
+            border-radius: 22px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 14px;
+            text-align: left;
+            border-bottom: 1px solid #d8e6e6;
+            color: #2f4f4f;
+        }
+
+        th {
+            background: #5a9c9a;
+            color: white;
+            font-weight: 800;
+        }
+
+        tr:hover td {
+            background: #eef8f8;
+        }
+
+        .total-box {
+            margin-top: 20px;
+            background: #a7d4d3;
+            padding: 18px 20px;
+            border-radius: 20px;
+            color: #2f4f4f;
+            font-weight: 800;
+            font-size: 20px;
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Gastos de Caja - Tienda 1</h1>
-        <p>Aqui se registran gastos menores del dia para Tienda 1.</p>
+    <div class="background">
+        <div class="wave top-left"></div>
+        <div class="wave bottom-right"></div>
+        <div class="sparkle s1">✦</div>
+        <div class="sparkle s2">✦</div>
+        <div class="sparkle s3">✦</div>
 
-        <a href="{{ back_url }}" class="back-btn">Volver</a>
+        <div class="container">
+            <h1>Gastos de Caja - Tienda 1</h1>
+            <p>Aquí se registran gastos menores del día para Tienda 1.</p>
 
-        <br><br>
+            <a href="{{ back_url }}" class="back-btn">Volver</a>
 
-        {% if mensaje %}
-            <p><strong>{{ mensaje }}</strong></p>
-        {% endif %}
+            {% if mensaje %}
+                <div class="mensaje">{{ mensaje }}</div>
+            {% endif %}
 
-        <form method="POST" action="/tienda1/gastos">
-            <label for="concepto">Concepto:</label><br>
-            <input type="text" id="concepto" name="concepto" required><br><br>
+            <div class="seccion">
+                <h2 style="margin-bottom: 18px;">Registrar gasto</h2>
 
-            <label for="monto">Monto:</label><br>
-            <input type="number" id="monto" name="monto" step="0.01" min="0.01" required><br><br>
+                <form method="POST" action="/tienda1/gastos">
+                    <label for="concepto">Concepto:</label>
+                    <input type="text" id="concepto" name="concepto" required>
 
-            <button type="submit">Guardar gasto</button>
-        </form>
+                    <label for="monto">Monto:</label>
+                    <input type="number" id="monto" name="monto" step="0.01" min="0.01" required>
 
-        <br><br>
+                    <button type="submit">Guardar gasto</button>
+                </form>
+            </div>
 
-        <h2>Gastos de hoy</h2>
+            <div class="seccion">
+                <h2>Gastos de hoy</h2>
 
-        <table border="1" cellpadding="10" cellspacing="0">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Concepto</th>
-                    <th>Monto</th>
-                    <th>Fecha</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for gasto in gastos %}
-                <tr>
-                    <td>{{ gasto[0] }}</td>
-                    <td>{{ gasto[1] }}</td>
-                    <td>${{ gasto[2] }}</td>
-                    <td>{{ gasto[3] }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Concepto</th>
+                                <th>Monto</th>
+                                <th>Fecha</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for gasto in gastos %}
+                            <tr>
+                                <td>{{ gasto[0] }}</td>
+                                <td>{{ gasto[1] }}</td>
+                                <td>${{ gasto[2] }}</td>
+                                <td>{{ gasto[3] }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
 
-        <br>
-
-        <h3>Total de gastos del dia: ${{ "%.2f"|format(total_gastos) }}</h3>
+                <div class="total-box">
+                    Total de gastos del día: ${{ "%.2f"|format(total_gastos) }}
+                </div>
+            </div>
+        </div>
     </div>
 </body>
 </html>

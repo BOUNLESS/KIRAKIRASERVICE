@@ -3,62 +3,238 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ventas del Dia Tienda 1 | Kira Kira</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='empleado_dashboard.css') }}">
+    <title>Ventas del Día Tienda 1 | Kira Kira</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background-color: #b8d8d8;
+            overflow-x: hidden;
+        }
+
+        .background {
+            min-height: 100vh;
+            position: relative;
+            padding: 30px;
+        }
+
+        .wave {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.25);
+            border-radius: 43% 57% 41% 59% / 56% 45% 55% 44%;
+            z-index: 0;
+        }
+
+        .top-left {
+            width: 400px;
+            height: 400px;
+            top: -150px;
+            left: -100px;
+            transform: rotate(10deg);
+        }
+
+        .bottom-right {
+            width: 350px;
+            height: 350px;
+            bottom: -100px;
+            right: -80px;
+            transform: rotate(-15deg);
+        }
+
+        .sparkle {
+            position: absolute;
+            color: white;
+            z-index: 0;
+            opacity: 0.7;
+            filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.8));
+        }
+
+        .s1 { top: 12%; left: 8%; font-size: 50px; }
+        .s2 { bottom: 16%; right: 10%; font-size: 30px; }
+        .s3 { top: 36%; right: 5%; font-size: 22px; }
+
+        .contenedor-principal {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #7cc0be;
+            padding: 36px;
+            border-radius: 30px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.10);
+            position: relative;
+            z-index: 10;
+        }
+
+        h1, h2 {
+            color: #2f4f4f;
+        }
+
+        h1 {
+            font-size: 34px;
+            margin-bottom: 8px;
+        }
+
+        p {
+            color: #2f4f4f;
+            font-weight: 600;
+        }
+
+        .resumen-cards {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin: 26px 0;
+        }
+
+        .card-resumen {
+            flex: 1;
+            min-width: 220px;
+            background: #a7d4d3;
+            border-radius: 22px;
+            padding: 22px;
+            box-shadow: inset 0 2px 4px rgba(255,255,255,0.25);
+        }
+
+        .card-resumen h3 {
+            color: #2f4f4f;
+            margin-bottom: 10px;
+        }
+
+        .card-resumen p {
+            font-size: 28px;
+            font-weight: 800;
+            color: #2f4f4f;
+            margin: 0;
+        }
+
+        .tabla-container {
+            background: rgba(255,255,255,0.22);
+            padding: 24px;
+            border-radius: 24px;
+            margin-top: 12px;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+            margin-top: 18px;
+            border-radius: 22px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(255,255,255,0.90);
+            border-radius: 22px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 14px;
+            text-align: left;
+            border-bottom: 1px solid #d8e6e6;
+            color: #2f4f4f;
+        }
+
+        th {
+            background: #5a9c9a;
+            color: white;
+            font-weight: 800;
+        }
+
+        tr:hover td {
+            background: #eef8f8;
+        }
+
+        .boton-volver {
+            margin-top: 24px;
+        }
+
+        .btn-volver {
+            display: inline-block;
+            padding: 14px 24px;
+            background: #2f4f4f;
+            color: white;
+            border-radius: 26px;
+            text-decoration: none;
+            font-weight: 800;
+            transition: 0.3s ease;
+        }
+
+        .btn-volver:hover {
+            background: #1e3636;
+            transform: scale(1.03);
+        }
+    </style>
 </head>
 <body>
-    <div class="contenedor-principal">
-        <h1>Ventas del Dia - Tienda 1</h1>
-        <p><strong>Filtro fijo por tienda_id={{ tienda_id }}</strong></p>
+    <div class="background">
+        <div class="wave top-left"></div>
+        <div class="wave bottom-right"></div>
+        <div class="sparkle s1">✦</div>
+        <div class="sparkle s2">✦</div>
+        <div class="sparkle s3">✦</div>
 
-        <div class="resumen-cards">
-            <div class="card-resumen">
-                <h3>Total vendido hoy</h3>
-                <p>${{ "%.2f"|format(total_vendido) }}</p>
+        <div class="contenedor-principal">
+            <h1>Ventas del Día - Tienda 1</h1>
+            <p><strong>Filtro fijo por tienda_id={{ tienda_id }}</strong></p>
+
+            <div class="resumen-cards">
+                <div class="card-resumen">
+                    <h3>Total vendido hoy</h3>
+                    <p>${{ "%.2f"|format(total_vendido) }}</p>
+                </div>
+
+                <div class="card-resumen">
+                    <h3>Total gastos de caja</h3>
+                    <p>${{ "%.2f"|format(total_gastos) }}</p>
+                </div>
+
+                <div class="card-resumen">
+                    <h3>Balance neto del día</h3>
+                    <p>${{ "%.2f"|format(balance_neto) }}</p>
+                </div>
             </div>
 
-            <div class="card-resumen">
-                <h3>Total gastos de caja</h3>
-                <p>${{ "%.2f"|format(total_gastos) }}</p>
+            <div class="tabla-container">
+                <h2>Lista de ventas realizadas hoy</h2>
+
+                {% if ventas_hoy %}
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID Venta</th>
+                                    <th>Total</th>
+                                    <th>Método de pago</th>
+                                    <th>Fecha</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for venta in ventas_hoy %}
+                                <tr>
+                                    <td>{{ venta[0] }}</td>
+                                    <td>${{ "%.2f"|format(venta[1]) }}</td>
+                                    <td>{{ venta[2] }}</td>
+                                    <td>{{ venta[3] }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p style="margin-top: 16px;">No hay ventas registradas hoy.</p>
+                {% endif %}
             </div>
 
-            <div class="card-resumen">
-                <h3>Balance neto del dia</h3>
-                <p>${{ "%.2f"|format(balance_neto) }}</p>
+            <div class="boton-volver">
+                <a href="{{ back_url }}" class="btn-volver">Volver al Panel</a>
             </div>
-        </div>
-
-        <div class="tabla-container">
-            <h2>Lista de ventas realizadas hoy</h2>
-
-            {% if ventas_hoy %}
-                <table>
-                    <thead>
-                        <tr>
-                            <th>ID Venta</th>
-                            <th>Total</th>
-                            <th>Metodo de pago</th>
-                            <th>Fecha</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for venta in ventas_hoy %}
-                        <tr>
-                            <td>{{ venta[0] }}</td>
-                            <td>${{ "%.2f"|format(venta[1]) }}</td>
-                            <td>{{ venta[2] }}</td>
-                            <td>{{ venta[3] }}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            {% else %}
-                <p>No hay ventas registradas hoy.</p>
-            {% endif %}
-        </div>
-
-        <div class="boton-volver">
-            <a href="{{ back_url }}" class="btn-volver">Volver al Panel</a>
         </div>
     </div>
 </body>
