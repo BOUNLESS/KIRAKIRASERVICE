@@ -1,7 +1,14 @@
 import os
 import traceback
-from datetime import datetime
-from flask import Flask, render_template, request, redirect, url_for, session
+import calendar
+from datetime import datetime, timedelta
+from io import BytesIO
+
+from flask import Flask, render_template, request, redirect, send_file, url_for, session
+from openpyxl import Workbook
+from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
+
+from database import get_connection
 
 from database import get_connection
 
@@ -10,6 +17,113 @@ app.secret_key = "kirakira_secret_key"
 app.url_map.strict_slashes = False
 DEBUG_TIENDA_LOGS = os.getenv("KIRAKIRA_DEBUG_TIENDA", "1") == "1"
 
+def construir_hoja_kira(ws, nombre_tienda, ventas_por_fecha, anio, mes):
+    fill_header = PatternFill(fill_type="solid", fgColor="5A9C9A")
+    fill_card = PatternFill(fill_type="solid", fgColor="D9F0EF")
+
+    font_header = Font(color="FFFFFF", bold=True)
+    font_bold = Font(bold=True)
+    font_title = Font(bold=True, size=14)
+
+    center = Alignment(horizontal="center")
+    left = Alignment(horizontal="left")
+
+    thin = Side(style="thin")
+    border = Border(left=thin, right=thin, top=thin, bottom=thin)
+
+    # Anchos
+    ws.column_dimensions["A"].width = 4
+    ws.column_dimensions["B"].width = 16
+    ws.column_dimensions["C"].width = 16
+    ws.column_dimensions["D"].width = 4
+    ws.column_dimensions["E"].width = 24
+    ws.column_dimensions["F"].width = 18
+
+    # Título
+    ws["B1"] = f"VENTA MENSUAL {nombre_tienda}"
+    ws["B1"].font = font_title
+
+    # Encabezados tabla izquierda
+    ws["B3"] = "Fecha"
+    ws["C3"] = "Venta"
+
+    ws["B3"].fill = fill_header
+    ws["C3"].fill = fill_header
+    ws["B3"].font = font_header
+    ws["C3"].font = font_header
+    ws["B3"].alignment = center
+    ws["C3"].alignment = center
+    ws["B3"].border = border
+    ws["C3"].border = border
+
+    # Todos los días del mes
+    dias_mes = calendar.monthrange(anio, mes)[1]
+
+    fila_inicio = 4
+    fila = fila_inicio
+
+    for dia in range(1, dias_mes + 1):
+        fecha_str = f"{anio:04d}-{mes:02d}-{dia:02d}"
+        venta = float(ventas_por_fecha.get(fecha_str, 0))
+
+        ws[f"B{fila}"] = fecha_str
+        ws[f"C{fila}"] = venta
+
+        ws[f"B{fila}"].alignment = center
+        ws[f"C{fila}"].alignment = center
+        ws[f"B{fila}"].border = border
+        ws[f"C{fila}"].border = border
+        ws[f"C{fila}"].number_format = '"$"#,##0.00'
+
+        fila += 1
+
+    fila_fin_ventas = fila - 1
+
+    # Bloque resumen
+    ws["E3"] = "Resumen"
+    ws["F3"] = "Monto"
+    ws["E3"].fill = fill_header
+    ws["F3"].fill = fill_header
+    ws["E3"].font = font_header
+    ws["F3"].font = font_header
+    ws["E3"].alignment = center
+    ws["F3"].alignment = center
+    ws["E3"].border = border
+    ws["F3"].border = border
+
+    resumen_labels = [
+        "Ventas del mes",
+        "Renta",
+        "Mantenimiento",
+        "Luz",
+        "Sueldos",
+        "Gastos variables",
+        "Total gastos fijos",
+        "Gasto total",
+        "Ganancia total"
+    ]
+
+    for i, label in enumerate(resumen_labels, start=4):
+        ws[f"E{i}"] = label
+        ws[f"F{i}"].fill = fill_card
+        ws[f"E{i}"].fill = fill_card
+        ws[f"E{i}"].font = font_bold
+        ws[f"E{i}"].alignment = left
+        ws[f"F{i}"].alignment = center
+        ws[f"E{i}"].border = border
+        ws[f"F{i}"].border = border
+        ws[f"F{i}"].number_format = '"$"#,##0.00'
+
+    # Fórmulas
+    ws["F4"] = f"=SUM(C{fila_inicio}:C{fila_fin_ventas})"  # Ventas del mes
+    ws["F5"] = 0  # Renta
+    ws["F6"] = 0  # Mantenimiento
+    ws["F7"] = 0  # Luz
+    ws["F8"] = 0  # Sueldos
+    ws["F9"] = 0  # Gastos variables manuales
+    ws["F10"] = "=SUM(F5:F8)"   # Total gastos fijos
+    ws["F11"] = "=F10+F9"       # Gasto total
+    ws["F12"] = "=F4-F11"       # Ganancia total
 
 def _debug_log(message):
     if DEBUG_TIENDA_LOGS:
@@ -555,7 +669,62 @@ def _legacy_redirect(modulo):
 def home():
     return render_template("login.html")
 
+@app.route("/admin/exportar-excel-30")
+def exportar_excel_30():
+    conn = get_connection()
+    cursor = conn.cursor()
 
+    hoy = datetime.now().date()
+    anio = hoy.year
+    mes = hoy.month
+    inicio_mes = f"{anio:04d}-{mes:02d}-01"
+    fin_mes = f"{anio:04d}-{mes:02d}-{calendar.monthrange(anio, mes)[1]:02d}"
+
+    # KIRA 1
+    cursor.execute("""
+        SELECT DATE(fecha), COALESCE(SUM(total), 0)
+        FROM ventas
+        WHERE tienda_id = 1 AND DATE(fecha) BETWEEN ? AND ?
+        GROUP BY DATE(fecha)
+        ORDER BY DATE(fecha)
+    """, (inicio_mes, fin_mes))
+    kira1_raw = cursor.fetchall()
+    kira1_dict = {str(fecha): float(total) for fecha, total in kira1_raw}
+
+    # KIRA 2
+    cursor.execute("""
+        SELECT DATE(fecha), COALESCE(SUM(total), 0)
+        FROM ventas
+        WHERE tienda_id = 2 AND DATE(fecha) BETWEEN ? AND ?
+        GROUP BY DATE(fecha)
+        ORDER BY DATE(fecha)
+    """, (inicio_mes, fin_mes))
+    kira2_raw = cursor.fetchall()
+    kira2_dict = {str(fecha): float(total) for fecha, total in kira2_raw}
+
+    conn.close()
+
+    wb = Workbook()
+
+    ws1 = wb.active
+    ws1.title = "KIRA 1"
+    construir_hoja_kira(ws1, "KIRA 1", kira1_dict, anio, mes)
+
+    ws2 = wb.create_sheet(title="KIRA 2")
+    construir_hoja_kira(ws2, "KIRA 2", kira2_dict, anio, mes)
+
+    output = BytesIO()
+    wb.save(output)
+    output.seek(0)
+
+    nombre_archivo = f"reporte_mensual_kira_{anio}_{mes:02d}.xlsx"
+
+    return send_file(
+        output,
+        as_attachment=True,
+        download_name=nombre_archivo,
+        mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
 @app.route("/health", methods=["GET"], endpoint="health")
 def health():
     try:
@@ -1181,7 +1350,6 @@ def gastos_legacy():
 @app.route("/cierre_caja", methods=["GET", "POST"], endpoint="cierre_caja")
 def cierre_legacy():
     return _legacy_redirect("cierre")
-
 
 @app.route("/agregar-al-carrito", methods=["POST"], endpoint="agregar_al_carrito")
 def agregar_al_carrito_legacy():
